@@ -125,10 +125,10 @@ if __name__=="__main__":
 
     drive = test_drive(bpm = 25)
     try:
-        for i in range(2):
+        for i in range(4):
             print "i = ",i
             drive.takeStep(0.2, 2, 1, 0.)    # drive
-            drive.takeStep(0., 2, 1, 0.02*pi/2.) # turn
+            drive.takeStep(0., 2, 1, 0.01*pi/2.) # turn
 
         #drive.led_off()
     except rospy.ROSInterruptException:
