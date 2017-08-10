@@ -54,6 +54,17 @@ for _, msg, t in bag.read_messages(topics=['/odom']):
     odom_angz.append(msg.twist.twist.angular.z)
     odom_linx.append(msg.twist.twist.linear.x)
     tm_odom.append(msg.header.stamp.to_nsec())
+
+cmdvel_angz = []
+cmdvel_linx = []
+tm_cmdvel = []
+for _, msg, msg_tm in bag.read_messages(topics=['/cmd_vel']):
+    if msg.linear.z <> 0. or msg.linear.y <> 0.:
+        print(msg.twist.twist)
+    cmdvel_angz.append(msg.angular.z)
+    cmdvel_linx.append(msg.linear.x)
+    tm_cmdvel.append(msg_tm.to_nsec())
+
 bag.close()
 
 #: plot data
@@ -70,7 +81,9 @@ ax3.plot(np.array(tm_servo_1)-tm0, np.array(servo_1), 'r-', label="servo_1")
 ax3.plot(np.array(tm_servo_2)-tm0, np.array(servo_2), 'b-', label="servo_2")
 ax3.legend(frameon=True, framealpha=0.5)
 ax4.plot(np.array(tm_odom)-tm0, np.array(odom_linx), 'g-', label="odom.linear.x")
-ax4.plot(np.array(tm_odom)-tm0, np.array(odom_angz), 'm-', label="odom.angular.z")
+ax4.plot(np.array(tm_odom)-tm0, np.array(odom_angz)/2./np.pi, 'm-', label="odom.angular.z")
+ax4.plot(np.array(tm_cmdvel)-tm0, np.array(cmdvel_linx), 'c-', label="cmd_vel.linear.x")
+ax4.plot(np.array(tm_cmdvel)-tm0, 2.*np.pi*np.array(cmdvel_angz), 'y-', label="cmd_vel.angular.z")
 ax4.legend(frameon=True, framealpha=0.5)
 f.subplots_adjust(hspace=0)
 plt.show()

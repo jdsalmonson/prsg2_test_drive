@@ -49,12 +49,14 @@ class test_drive(object):
         # count of current measure:
         n_count   = n_beat - self.meter * (n_measure - 1)
 
+        srv_ang_min = 20 #10
+        srv_ang_max = 160 #170
         # servo service invoked if time since last beat is < led duration
         # *** need to refine this: should service only be invoked once?
         if (t_song - (n_beat - 1)*self.t_spb) < self.led_dur:
             if n_count == 1:
-                self.servo_srv(id = 0, value = 10)
-                self.servo_srv(id = 1, value = 170)
+                self.servo_srv(id = 0, value = srv_ang_min)
+                self.servo_srv(id = 1, value = srv_ang_max)
                 '''
                 if self.led1_on is False:
                     self.led1_on = True
@@ -64,8 +66,8 @@ class test_drive(object):
                     self.led_srv(pin=self.led2,value=0)
                 '''
             else:
-                self.servo_srv(id = 0, value = 170)
-                self.servo_srv(id = 1, value = 10)
+                self.servo_srv(id = 0, value = srv_ang_max)
+                self.servo_srv(id = 1, value = srv_ang_min)
                 '''
                 if self.led1_on is True:
                     self.led1_on = False
@@ -130,6 +132,11 @@ if __name__=="__main__":
             drive.takeStep(0.2, 2, 1, 0.)    # drive
             drive.takeStep(0., 2, 1, 0.01*pi/2.) # turn
 
+        for i in range(2):
+            print "2. i = ",i
+            drive.takeStep(0.2, 2, -1, 0.01*pi/2.)
+            drive.takeStep(0.2, 2,  1, 0.01*pi/2.)
+            
         #drive.led_off()
     except rospy.ROSInterruptException:
         print "Exception"
