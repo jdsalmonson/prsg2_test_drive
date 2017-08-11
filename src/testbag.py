@@ -5,7 +5,9 @@
 import rosbag
 import numpy as np
 
-bagfile = "prsg2-sensors_2017-08-07-23-04-16.bag"
+bagfile = "prsg2-sensors_2017-08-10-22-21-16.bag"
+#bagfile = "prsg2-sensors_2017-08-09-22-13-48.bag"
+#bagfile = "prsg2-sensors_2017-08-07-23-04-16.bag"
 #bagfile = "prsg2-sensors_2017-08-07-23-10-04.bag"
 
 bag = rosbag.Bag(bagfile)
@@ -72,19 +74,20 @@ from pylab import plt
 
 f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True)
 ax1.set_title(bagfile)
-ax1.plot(np.array(tm)-tm0, np.array(voltage), 'k', label="voltage [mV]")
+ax1.plot((np.array(tm)-tm0)/1.e9, np.array(voltage), 'k', label="voltage [mV]")
 ax1.legend(frameon=True, framealpha=0.5)
-ax2.plot(np.array(tm_ir_1)-tm0, np.array(ir_1), 'r-', label="ir_1")
-ax2.plot(np.array(tm_ir_2)-tm0, np.array(ir_2), 'b-', label="ir_2")
+ax2.plot((np.array(tm_ir_1)-tm0)/1.e9, np.array(ir_1), 'r-', label="ir_1")
+ax2.plot((np.array(tm_ir_2)-tm0)/1.e9, np.array(ir_2), 'b-', label="ir_2")
 ax2.legend(frameon=True, framealpha=0.5)
-ax3.plot(np.array(tm_servo_1)-tm0, np.array(servo_1), 'r-', label="servo_1")
-ax3.plot(np.array(tm_servo_2)-tm0, np.array(servo_2), 'b-', label="servo_2")
+ax3.plot((np.array(tm_servo_1)-tm0)/1.e9, np.array(servo_1), 'r-', label="servo_1")
+ax3.plot((np.array(tm_servo_2)-tm0)/1.e9, np.array(servo_2), 'b-', label="servo_2")
 ax3.legend(frameon=True, framealpha=0.5)
-ax4.plot(np.array(tm_odom)-tm0, np.array(odom_linx), 'g-', label="odom.linear.x")
-ax4.plot(np.array(tm_odom)-tm0, np.array(odom_angz)/2./np.pi, 'm-', label="odom.angular.z")
-ax4.plot(np.array(tm_cmdvel)-tm0, np.array(cmdvel_linx), 'c-', label="cmd_vel.linear.x")
-ax4.plot(np.array(tm_cmdvel)-tm0, 2.*np.pi*np.array(cmdvel_angz), 'y-', label="cmd_vel.angular.z")
+ax4.plot((np.array(tm_odom)-tm0)/1.e9, np.array(odom_linx), 'g-', label="odom.linear.x")
+ax4.plot((np.array(tm_odom)-tm0)/1.e9, np.array(odom_angz)/2./np.pi, 'm-', label="odom.angular.z")
+ax4.plot((np.array(tm_cmdvel)-tm0)/1.e9, np.array(cmdvel_linx), 'c-', label="cmd_vel.linear.x")
+ax4.plot((np.array(tm_cmdvel)-tm0)/1.e9, 2.*np.pi*np.array(cmdvel_angz), 'y-', label="cmd_vel.angular.z")
 ax4.legend(frameon=True, framealpha=0.5)
+ax4.set_xlabel("time [s]")
 f.subplots_adjust(hspace=0)
 plt.show()
 
