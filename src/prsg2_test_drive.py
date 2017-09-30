@@ -8,6 +8,7 @@
 # Jay Salmonson
 # 11/15/2016 - quadrille
 # 8/6/2017 - prsg2_test_drive
+# 9/29/2017 - added ability to use in STDR simulator
 
 import roslib; roslib.load_manifest("prsg2_test_drive")
 import rospy
@@ -21,6 +22,8 @@ import sys
 sys.path.append("../ros_arduino_bridge")
 from ros_arduino_msgs.srv import *
 
+from servo_srv_sim import Servo_Srv_Sim
+
 class test_drive(object):
 
     def __init__(self, bpm = 60, meter = 2):
@@ -33,15 +36,23 @@ class test_drive(object):
         self.led2 = 104
         self.led1_on = False
         self.led2_on = False
-        self.pub = rospy.Publisher('cmd_vel', Twist, queue_size = 1)
+
         rospy.init_node('test_drive')
+
+        #: For robot:
+        #self.servo_srv = rospy.ServiceProxy('/arduino/servo_write', ServoWrite)
+        #cmd_vel = 'cmd_vel'
+        #: For simulation:
+        self.servo_srv = Servo_Srv_Sim()
+        cmd_vel = 'robot0/cmd_vel'
+
+        self.pub = rospy.Publisher(cmd_vel, Twist, queue_size = 1)
 
         #speed = rospy.get_param("~speed", 0.5)
         #turn  = rospy.get_param("~turn",  1.0)
 
         #self.led_srv = rospy.ServiceProxy('/arduino/digital_write',DigitalWrite)
-        self.servo_srv = rospy.ServiceProxy('/arduino/servo_write', ServoWrite)
-
+        
     def servo_time(self, time):
         t_song    = time - self.t_start
         n_beat    = int(t_song/self.t_spb) + 1 #(1st is 1)
@@ -127,16 +138,21 @@ if __name__=="__main__":
 
     drive = test_drive(bpm = 25)
     try:
-        for i in range(4):
+        #drive.takeStep(0.,2, 1, 0.)
+       
+        for i in range(2):
             print "i = ",i
-            drive.takeStep(0.2, 2, 1, 0.)    # drive
-            drive.takeStep(0., 2, 1, 0.01*pi/2.) # turn
-
+            drive.takeStep(2.*0.2, 2, 1, 0.)
+            drive.takeStep(2.*0.2, 2, -1, 0.)    # drive
+            
+            #drive.takeStep(0., 2, 1, 0.01*pi/2.) # turn
+            
+        
         for i in range(2):
             print "2. i = ",i
             drive.takeStep(0.2, 2, -1, 0.01*pi/2.)
             drive.takeStep(0.2, 2,  1, 0.01*pi/2.)
-            
+        
         #drive.led_off()
     except rospy.ROSInterruptException:
         print "Exception"

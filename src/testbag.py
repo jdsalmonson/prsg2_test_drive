@@ -5,7 +5,11 @@
 import rosbag
 import numpy as np
 
-bagfile = "prsg2-sensors_2017-08-10-22-21-16.bag"
+bagfile = "/tmp/stdr-prsg2-sensors_2017-09-30-00-36-28.bag"
+#bagfile = "/tmp/prsg2-base-sensors_2017-09-22-23-35-05.bag"
+#bagfile = "/tmp/prsg2-sensors_2017-09-21-22-24-40.bag"
+#bagfile = "/tmp/prsg2-sensors_2017-08-27-20-17-05.bag"
+#bagfile = "prsg2-sensors_2017-08-10-22-21-16.bag"
 #bagfile = "prsg2-sensors_2017-08-09-22-13-48.bag"
 #bagfile = "prsg2-sensors_2017-08-07-23-04-16.bag"
 #bagfile = "prsg2-sensors_2017-08-07-23-10-04.bag"
@@ -20,8 +24,8 @@ for topic, msg, t in bag.read_messages(topics=['/arduino/sensor/battery_voltage'
     voltage.append(msg.value)
     tm.append(msg.header.stamp.to_nsec())
 
-#get a time zero:
-tm0 = tm[0]
+#get a time zero (for real robot with battery)
+#tm0 = tm[0]
 
 ir_1 = []
 tm_ir_1 = []
