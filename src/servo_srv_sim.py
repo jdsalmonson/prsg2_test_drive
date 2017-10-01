@@ -3,7 +3,7 @@ servo_srv_sim.py - simulate the psrg2 servo service with the
                    stdr_prsg2 fake robot.
 
 Jay Salmonson
-9/29/2007
+9/29/2017
 '''
 from __future__ import print_function
 import sys
@@ -11,6 +11,8 @@ from math import pi
 
 
 import rospy
+
+from std_msgs.msg import Int16
 
 #sys.path.append("../../stdr_simulator")
 from stdr_msgs.srv import ReadSensorPose, WriteSensorPose
@@ -22,7 +24,8 @@ class Servo_Srv_Sim(object):
     def __init__(self, dt = 10, rate = 0.1, N_servos = 2):
         self.dt = dt  #: [ms] time til next servo move
         self.rate = rate #: [degree/ms] sweep rate of servo
-        self.delt = rate*dt # [degrees/move]
+        self.delt = rate*dt #: [degrees/move]
+        self.pubrate = 10 #: [Hz] rate of servo position publication
         
         self.N_servos = N_servos #: number of servos
 
@@ -31,6 +34,8 @@ class Servo_Srv_Sim(object):
         for isrv in range(N_servos):
             servo = {}
 
+            servo['index'] = isrv
+            
             servo['read_srv'] = \
                 rospy.ServiceProxy(basenm+str(isrv)+'/readpose',
                                    ReadSensorPose)
@@ -47,11 +52,16 @@ class Servo_Srv_Sim(object):
             servo['theta_req'] = servo['theta_ref'] # requested theta
 
             servo['theta'] = servo['theta_ref'] # actual servo theta
+
+            servo['pub_theta'] = rospy.Publisher(basenm+str(isrv)+'/angle',
+                                                 Int16, queue_size = 2)
             
             self.servos.append(servo)
             
-        # Init timer
+        # Init timer for servo movement:
         self.timer = rospy.Timer(rospy.Duration(self.dt*ms), self.onTimer)
+        # Init timer for publication of servo position:
+        self.timerpub = rospy.Timer(rospy.Duration(1./self.pubrate), self.onTimerpub)
         
     def onTimer(self, event):
         '''
@@ -83,7 +93,13 @@ class Servo_Srv_Sim(object):
                 
             #print(" {} {}  ".format(srv['theta_req'], srv['theta']), end=myend)
             myend = "\n"
-
+            
+    def onTimerpub(self, event):
+        for srv in self.servos:
+            msg = Int16()
+            msg.data = srv['theta']
+            srv['pub_theta'].publish(msg)
+        
     def __call__(self, id, value):
         self.servos[id]['theta_req'] = min(max(int(value), 0), 180)
         
