@@ -21,7 +21,7 @@ ms = 1.e-3 # [milliseconds/second]
 
 class Servo_Srv_Sim(object):
 
-    def __init__(self, dt = 10, rate = 0.1, N_servos = 2):
+    def __init__(self, dt = 10, rate = 0.05, N_servos = 2):
         self.dt = dt  #: [ms] time til next servo move
         self.rate = rate #: [degree/ms] sweep rate of servo
         self.delt = rate*dt #: [degrees/move]

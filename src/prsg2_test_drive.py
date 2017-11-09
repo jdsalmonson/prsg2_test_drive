@@ -40,11 +40,11 @@ class test_drive(object):
         rospy.init_node('test_drive')
 
         #: For robot:
-        #self.servo_srv = rospy.ServiceProxy('/arduino/servo_write', ServoWrite)
-        #cmd_vel = 'cmd_vel'
+        self.servo_srv = rospy.ServiceProxy('/arduino/servo_write', ServoWrite)
+        cmd_vel = 'cmd_vel'
         #: For simulation:
-        self.servo_srv = Servo_Srv_Sim()
-        cmd_vel = 'robot0/cmd_vel'
+        #self.servo_srv = Servo_Srv_Sim()
+        #cmd_vel = 'robot0/cmd_vel'
 
         self.pub = rospy.Publisher(cmd_vel, Twist, queue_size = 1)
 
@@ -150,8 +150,8 @@ if __name__=="__main__":
         
         for i in range(2):
             print "2. i = ",i
-            drive.takeStep(0.2, 2, -1, 0.01*pi/2.)
-            drive.takeStep(0.2, 2,  1, 0.01*pi/2.)
+            drive.takeStep(0.2, 2,  1, 10.*0.01*pi/2.)
+            drive.takeStep(0.2, 2, -1, 10.*0.01*pi/2.)
         
         #drive.led_off()
     except rospy.ROSInterruptException:
