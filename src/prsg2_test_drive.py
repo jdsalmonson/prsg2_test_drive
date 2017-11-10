@@ -26,7 +26,7 @@ from servo_srv_sim import Servo_Srv_Sim
 
 class test_drive(object):
 
-    def __init__(self, bpm = 60, meter = 2):
+    def __init__(self, bpm = 60, meter = 2, stdr = False):
         self.bpm   = bpm
         self.meter = meter  # numerator of key time signature. e.g. 3 in 3/4.
         self.t_start = -1   # time of start of entire dance
@@ -39,12 +39,12 @@ class test_drive(object):
 
         rospy.init_node('test_drive')
 
-        #: For robot:
-        self.servo_srv = rospy.ServiceProxy('/arduino/servo_write', ServoWrite)
-        cmd_vel = 'cmd_vel'
-        #: For simulation:
-        #self.servo_srv = Servo_Srv_Sim()
-        #cmd_vel = 'robot0/cmd_vel'
+        if not stdr: #: For robot
+            self.servo_srv = rospy.ServiceProxy('/arduino/servo_write', ServoWrite)
+            cmd_vel = 'cmd_vel'
+        else: #: For STDR simulation
+            self.servo_srv = Servo_Srv_Sim()
+            cmd_vel = 'robot0/cmd_vel'
 
         self.pub = rospy.Publisher(cmd_vel, Twist, queue_size = 1)
 
@@ -136,7 +136,7 @@ class test_drive(object):
 
 if __name__=="__main__":
 
-    drive = test_drive(bpm = 25)
+    drive = test_drive(bpm = 25, stdr = False)
     try:
         #drive.takeStep(0.,2, 1, 0.)
        
